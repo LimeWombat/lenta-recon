@@ -1,0 +1,19 @@
+{
+  "name": "lenta-cli",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Кастомный CLI-клиент «ЛЕНТЫ» (личный аккаунт): вход по SMS, запуск игры «Лентомания», профиль и купоны",
+  "type": "module",
+  "bin": {
+    "lenta": "./lenta.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "status": "node lenta.mjs status",
+    "guest": "node lenta.mjs guest",
+    "login": "node lenta.mjs login",
+    "game": "node lenta.mjs game"
+  }
+}

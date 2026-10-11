@@ -1,0 +1,52 @@
+# «Лентомания» (Lenta 6) — карта API игрового бэкенда
+
+Источник: объект `WebGLNetworkConfig` из UnityFS-бандла `data.unity3d`
+(внутри `Build/…data.unityweb` фронтенда игры). Извлечено UnityPy 11.10.2026.
+Сырой дамп: `work/game/unitypy2.txt`. Общая картина — в `docs/Разбор-LENTA-APK-6.42.0.md`, §9.6.
+
+## Хосты
+
+| Окружение | URL |
+|---|---|
+| Прод | `https://lnt-backend.ru` + base path `api/v1` (DNS: 158.160.237.209) |
+| Тест | `https://lenta-back-test.pg7digital.ru` |
+| Dev | `https://lenta-six-dev-backend.pg7digital.ru` |
+| Мёртвый дефолт в коде | `https://dd-backend.pustogames.ru` (не резолвится — застрявший placeholder) |
+
+Два секретных значения конфига хранятся как ACTk `ObscuredString` (в статике — шифртекст; здесь намеренно не приводим).
+
+## Метод → путь (относительно `{host}/api/v1/`)
+
+| Метод движка | Путь | Смысл |
+|---|---|---|
+| GetTime | `server-time/` | серверное время |
+| GetToken | `auth/token/` | обмен `token_lenta` → backend-токен |
+| GetSave | `player/save/` | сохранение прогресса |
+| GetFaq | `faq/` | FAQ |
+| PatchSettings | `player/update-settings/` | настройки игрока |
+| PatchMenuTutorial | `player/complete-tutorial/` | туториал |
+| PatchGiveConsent | `player/allow-lottery/` | согласие на лотерею |
+| GetTasks | `tasks/` | задания (за покупки) |
+| GetPrizes | `prizes/` | призы/промокоды |
+| GetLottery | `lotteries/` | лотереи |
+| PostTask | `tasks/complete/` | выполнить задание |
+| GetMinigameLevels | `minigame/levels/` | уровни мини-игры |
+| PostStartMinigame | `minigame/start-game/` | старт уровня |
+| PostWinMinigame | `minigame/win-game/` | победа |
+| PostLoseMinigame | `minigame/loss-game/` | поражение |
+| GetBoosts | `player/boosts/` | бусты |
+| PatchUseBoost | `player/use-boost/` | использовать буст |
+| PatchStreak | `player/streak-progress/` | стрик/серия |
+| GetTimeClaim | `player/get-time-claim/` | тайм-клейм |
+| PostRewardClaim | `player/claim-reward/` | забрать награду |
+
+## Прочее из конфига
+
+- `WebGLNetworkConfig` — имя класса конфига; рядом лежат пути шаблона сборки:
+  `./js/server.json`, `/WebGLTemplates/TemplateBase/js/server.editor.json`,
+  `Assets/Generated/NetworkManager/WebGL/Handles`.
+- В сборке есть `MockBackend` (`mock_backend`) — режим игры без реального сервера (для разработки).
+- Пример-фикстура с полным набором query-параметров (`token_lenta`, `customer_id`, `crm_id`, `partner`)
+  зашита в сборку как тестовый образец — сам токен не приводим.
+- `DataManager: requesting backend token` / `backend token received` — стартовая последовательность:
+  токен из URL → `auth/token/` → дальше `player/save/`.

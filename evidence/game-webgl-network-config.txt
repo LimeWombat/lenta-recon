@@ -1,0 +1,55 @@
+# Дамп объекта WebGLNetworkConfig (игра «Лентомания») из UnityFS-бандла data.unity3d, UnityPy
+# Источник: Build/*.data.unityweb фронтенда lentomania.lenta.com (дата: 2026-10-11)
+# Строки с обфусцированными ключами (ACTk ObscuredString) из дампа убраны
+config-like MonoBehaviour: 1
+=== name: ? size: 2076
+   | WebGLNetworkConfig
+   | https://lnt-backend.ru
+   | api/v1
+   | https://lenta-back-test.pg7digital.ru
+   | https://lenta-six-dev-backend.pg7digital.ru
+   | https://lentomania.lenta.com/?token_lenta=163606e6c33e2791b1e52c6aebed7e34f1812e93b9c6f37c46fd1c7d0b56ad99&customer_id=9725d405-56e8-48e9-aa72-3a7072fd725f&crm_
+   | id=2111&partner=none
+   | ./js/server.json2
+   | /WebGLTemplates/TemplateBase/js/server.editor.json
+   | Assets/Generated/NetworkManager/WebGL/Handles
+   | GetTime
+   | server-time/
+   | GetToken
+   | auth/token/
+   | GetSave
+   | player/save/
+   | GetFaq
+   | faq/
+   | PatchSettings
+   | player/update-settings/
+   | PatchMenuTutorial
+   | player/complete-tutorial/
+   | PatchGiveConsent
+   | player/allow-lottery/
+   | GetTasks
+   | tasks/
+   | GetPrizes
+   | prizes/
+   | GetLottery
+   | lotteries/
+   | PostTask
+   | tasks/complete/
+   | GetMinigameLevels
+   | minigame/levels/
+   | PostStartMinigame
+   | minigame/start-game/
+   | PostWinMinigame
+   | minigame/win-game/
+   | PostLoseMinigame
+   | minigame/loss-game/
+   | GetBoosts
+   | player/boosts/
+   | PatchUseBoost
+   | player/use-boost/
+   | PatchStreak
+   | player/streak-progress/
+   | GetTimeClaim
+   | player/get-time-claim/
+   | PostRewardClaim
+   | player/claim-reward/
