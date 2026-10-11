@@ -75,4 +75,4 @@ node lenta.mjs game --open
 
 `lenta game --open` получает у API «Ленты» свежую ссылку на игру и открывает её в обычном браузере.
 Игра — Unity WebGL «Lenta 6» (хост `lentomania.lenta.com`), у неё отдельный игровой бэкенд;
-разбор — в `docs/Разбор-LENTA-APK-6.42.0.md` (§9.6), зеркало фронтенда — в `work/game/site`.
+разбор — в `docs/Разбор-LENTA-APK-6.42.0.md` (§9.6).
