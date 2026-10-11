@@ -1,8 +1,8 @@
 # «Лентомания» (Lenta 6) — карта API игрового бэкенда
 
 Источник: объект `WebGLNetworkConfig` из UnityFS-бандла `data.unity3d`
-(внутри `Build/…data.unityweb` фронтенда игры). Извлечено UnityPy 11.10.2026.
-Сырой дамп: `work/game/unitypy2.txt`. Общая картина — в `docs/Разбор-LENTA-APK-6.42.0.md`, §9.6.
+(внутри `Build/…data.unityweb` фронтенда игры). Дата разбора: 11.10.2026.
+Сырой дамп — `evidence/game-webgl-network-config.txt`; общая картина — в `docs/Разбор-LENTA-APK-6.42.0.md`, §9.6.
 
 ## Хосты
 

@@ -1,13 +1,12 @@
 # «ЛЕНТА» — разбор APK по костям (v6.42.0, Android)
 
-> Документ подготовлен по статическому анализу официального APK-бандла APKMirror.
-> Работа выполнялась инструментом **REA** (репозиторий `github.com/morluto/rea`) и декомпилятором **JADX**.
+> Документ подготовлен по статическому анализу официального APK-бандла (APKMirror) и веб-сборки игры.
 > Всё, что здесь написано, — либо прямая цитата из декомпилированного кода, либо наблюдение с указанием источника.
 > Что не проверено вживую — помечено явно.
 
 ---
 
-## 0. Паспорт артефакта и инструменты
+## 0. Паспорт артефакта
 
 | Параметр | Значение |
 |---|---|
@@ -17,27 +16,15 @@
 | Версия | 6.42.0 (versionCode 2610) |
 | minSdk / targetSdk | 26 (Android 8.0) / 35 |
 | `base.apk` SHA-256 | `c99d0852c133bee7fe90b269d377df6df81d4275e80552049f7890ed0d39da48` |
-| Классов в APK (REA) | 38 295 |
+| Классов в APK | 38 295 |
 | Ресурсов | 1 955 |
-| REA evidence (манифест/пакет) | `ev_7cfb2dacb29d75aaf4d4979a9dedabefd202f4d51cd55d24448dd76ef9d6bd68` |
 
-**Инструменты, которыми это разобрано:**
+**Как это делалось:**
 
-- **REA 6.4.0** — MCP/CLI-обвязка для реверса; для Android ей нужен отдельный движок `jadx-headless-mcp 0.7.1`
-  (`REA_JADX_MCP_JAR`), который скачивается по инструкции самого REA (`docs/android-analysis.md`; SHA-256 сверен:
-  `6e5eacf500b64292bfb73c49797c1958f6ee44646e43e868039ae7feb573ff75`).
-- **JADX 1.5.6** (JDK 22) — полная декомпиляция в `work/jadx_out` (≈38 тыс. `.java`, 298 классов с ошибками
-  декомпиляции — это норма для обфусцированных мест).
-- Node.js 24 — для будущего клиента.
-
-Команды, которыми получены ключевые факты (воспроизводимо):
-
-```sh
-rea inspect-android-package  work/apkm/base.apk
-rea search-android-classes   work/apkm/base.apk "Game"
-rea inspect-android-class    work/apkm/base.apk org.openapitools.client.apis.AuthApi
-rea inspect-android-method   work/apkm/base.apk org.openapitools.client.apis.AuthApi sendAuthCode
-```
+- полная декомпиляция `base.apk`: ≈38 тыс. классов (298 не поддались декомпиляции — норма для
+  обфусцированных мест);
+- отдельный разбор сетевого слоя приложения и веб-сборки игры (Unity WebGL), вплоть до её сетевого конфига;
+- клиент в `client/` написан на Node.js.
 
 ---
 
@@ -93,7 +80,7 @@ libucs-credential.so
 
 ## 3. Манифест и компоненты (выжимка)
 
-Разрешения (полный список от REA): интернет, геолокация (FINE/COARSE), камера (`CAMERA`, `CAMERA2`),
+Разрешения (из манифеста): интернет, геолокация (FINE/COARSE), камера (`CAMERA`, `CAMERA2`),
 микрофон, `POST_NOTIFICATIONS`, `AD_ID`, Wi-Fi, `FOREGROUND_SERVICE`, вибрация, `USE_BIOMETRIC`/`USE_FINGERPRINT`,
 `RECEIVE_BOOT_COMPLETED`, FCM (`com.google.android.c2dm...`), `com.huawei.permission.ACCESS_HW_KEYSTORE`,
 а также `ru.sberbank.mobile.sberid.BIND_PERSONALIZATION_SERVICE` (SberID).
@@ -206,13 +193,13 @@ org.openapitools.client.…       — сгенерированный API-кли�
 
 ```java
 timestamp = String.valueOf(System.currentTimeMillis() / 1000);          // секунды
-qrSignature = md5( "80cc45a4e18aa6ed9f8eec9523f6b4ee" + <URL без query> + timestamp );  // hex, нижний регистр
+qrSignature = md5( <секрет из APK> + <URL без query> + timestamp );     // hex, нижний регистр
 ```
 
 Заголовки: `App-Version` (`6.42.0`), `Timestamp` (unix-секунды) и `Qrator-Token` (подпись из строки выше).
 
 `<URL без query>` — полный адрес, например `https://api.lenta.com/v1/game/start`.
-Секрет `80cc45a4e18aa6ed9f8eec9523f6b4ee` — публичная константа в коде.
+Секрет — обычная строковая константа в коде приложения (здесь не приводим).
 Если WAF отдаёт челлендж (`__qrator/qauth.js`), приложение пишет это в лог «WAF error» — клиенту стоит
 просто повторить запрос/подождать (в обычной эксплуатации челлендж почти не срабатывает).
 
@@ -425,7 +412,7 @@ https://lentomania.lenta.com/   + query-параметры: token_lenta (одн�
   (`js/network.js` — окно логов сети, `js/logs.js`); мост с хостом: `Data.SetDeviceType(...)` в Unity
   и `Print.postMessage('game')` при выходе — это для WebView-обёртки приложения.
 - Античит: **Anti-Cheat Toolkit** (codestage.net; `ObscuredString`/`ObscuredFloat`/`ObscuredByte`).
-- Зеркало фронтенда скачано в `work/game/site` (оболочка + `Build/` + распакованные файлы в `unpacked/`).
+- Копия фронтенда игры разобрана локально; в репозиторий материалы игры не выкладываются.
 
 ### 9.7. Итог живого теста (11.10.2026)
 
@@ -462,10 +449,9 @@ https://lentomania.lenta.com/   + query-параметры: token_lenta (одн�
   не открывает ссылки с токеном в query-параметрах, а сам Unity-клиент инструментами не запускался.
 - API игрового бэкенда (`lnt-backend.ru`) напрямую не вызывался — разобран статически из сборки.
 - Призовой контур (задания, лотереи, выигрыши) не тестировался.
-- Рантайм-поведение приложения (мы его не запускали; анализ чисто статический — REA это explicitly
-  фиксирует в Evidence).
+- Рантайм-поведение приложения (оно не запускалось; анализ чисто статический).
 - Проверки на стороне сервера, которых нет в APK (антифрод, лимиты, WAF-челленджи).
-- Подпись APK не верифицировалась (REA это тоже отмечает: `signature_verification: not_performed`).
+- Подпись APK не верифицировалась.
 - Контур InAppStory-игр разобран обзорно (флоу с `api key` не вскрывали — отдельная задача).
 
 ## 12. Риски и рамки
@@ -479,8 +465,7 @@ https://lentomania.lenta.com/   + query-параметры: token_lenta (одн�
 ## 13. Приложения
 
 - Полный список эндпоинтов: `docs/api-endpoints.txt` (153 записи).
-- Декомпилированные исходники: `work/jadx_out/sources` (обращайтесь к ним как к основному «источнику правды»).
-- REA-логи (Evidence): `work/logs/iap.txt`, `work/logs/iap2.txt`.
+- Пути к классам ниже — из декомпилированного кода приложения.
 - Ключевые файлы-доказательства:
   - `com/lenta/platform/netclient/interceptors/ApiGatewayAuthInterceptor.java` — токены;
   - `com/lenta/platform/netclient/RequestHeaderInterceptor.java` — основные заголовки;
@@ -493,7 +478,5 @@ https://lentomania.lenta.com/   + query-параметры: token_lenta (одн�
   - `com/inappstory/sdk/game/reader/GameJSInterface.java` — JS-мост InAppStory;
   - `ru/app/network/NetworkModule_ProvideNetClientConfigFactory.java` — сборка конфига сети.
 - Игра:
-  - `docs/game-lentomania-api-map.txt` — карта API игрового бэкенда (из объекта `WebGLNetworkConfig`);
-  - `work/game/site` — зеркало фронтенда игры (оболочка + `Build/`);
-    `work/game/site/unpacked` — распакованные `.unityweb` и файлы из `data.unity3d`;
-  - `work/game/unitypy2.txt` — дамп конфига (UnityPy); `work/game/site/js/analytics-map.json` — карта экранов.
+  - `docs/game-lentomania-api-map.txt` — карта API игрового бэкенда;
+  - `evidence/game-webgl-network-config.txt` — сырой дамп сетевого конфига игры.

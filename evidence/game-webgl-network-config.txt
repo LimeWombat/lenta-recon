@@ -1,4 +1,4 @@
-# Дамп объекта WebGLNetworkConfig (игра «Лентомания») из UnityFS-бандла data.unity3d, UnityPy
+# Дамп объекта WebGLNetworkConfig (игра «Лентомания») из UnityFS-бандла data.unity3d
 # Источник: Build/*.data.unityweb фронтенда lentomania.lenta.com (дата: 2026-10-11)
 # Строки с обфусцированными ключами (ACTk ObscuredString) из дампа убраны
 config-like MonoBehaviour: 1
